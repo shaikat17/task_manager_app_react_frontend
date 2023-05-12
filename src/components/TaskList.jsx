@@ -75,6 +75,18 @@ const TaskList = () => {
         getTasks()
     }
 
+    const setTaskComplete = async (task) => {
+        const newFormData = {
+            name: task.name,
+            completed: true
+        }
+
+        const res = await axios.put(`http://localhost:3000/api/task/${task._id}`, newFormData)
+        if(res.status === 200 ) toast.success("Congratulations... You have Completed the Task Successfully")
+        getTasks()
+    }
+
+
     return (
         <div>
             <h2>Task Manager</h2>
@@ -92,7 +104,7 @@ const TaskList = () => {
             <p className="--py">No task added.
             Please add a task.</p>
            ) : (<>
-           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} handleDelete={handleDelete} getSingleTask={getSingleTask} />)}
+           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} handleDelete={handleDelete} getSingleTask={getSingleTask} setTaskComplete={setTaskComplete} />)}
            </>)}
         </div>
     );
