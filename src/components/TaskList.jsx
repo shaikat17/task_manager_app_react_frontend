@@ -32,6 +32,7 @@ const TaskList = () => {
         .then(res => {
             toast.success("Task Added Successfully")
             setFormData({...formData, name: ""})
+            getTasks()
         })
         .catch(err => toast.error(err.message))
     }
@@ -47,6 +48,15 @@ const TaskList = () => {
     useEffect(() => {
         getTasks()
     },[])
+
+    const handleDelete = async (id) => {
+        const res = await axios.delete(`http://localhost:3000/api/task/${id}`)
+        if(res.status === 200) {
+            toast.success("Task Deleted Successfully")
+            const remaining = tasks.filter(task => task._id !== id)
+            setTasks(remaining)
+        }
+    }
 
     return (
         <div>
@@ -65,7 +75,7 @@ const TaskList = () => {
             <p className="--py">No task added.
             Please add a task.</p>
            ) : (<>
-           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} />)}
+           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} handleDelete={handleDelete} />)}
            </>)}
         </div>
     );
