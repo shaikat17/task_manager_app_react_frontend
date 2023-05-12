@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import Task from "./Task";
 import TaskForm from "./TaskForm";
 import axios from "axios";
+import loadingImg from '../assets/loader.gif'
 
 
 const TaskList = () => {
@@ -10,6 +11,10 @@ const TaskList = () => {
         name: "",
         completed: false
     })
+
+    const [tasks, setTasks] = useState([])
+    const [completeTasks, setCompleteTasks] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const {name} = formData
 
@@ -30,6 +35,19 @@ const TaskList = () => {
         })
         .catch(err => toast.error(err.message))
     }
+
+    const getTasks = async () => {
+        setLoading(true)
+        const res = await axios('http://localhost:3000/api/tasks')
+        
+        setLoading(false)
+        setTasks(res.data)
+    }
+
+    useEffect(() => {
+        getTasks()
+    },[])
+
     return (
         <div>
             <h2>Task Manager</h2>
@@ -43,7 +61,12 @@ const TaskList = () => {
                 </p>
             </div>
             <hr />
-            <Task />
+           {!loading && tasks.length === 0 ? (
+            <p className="--py">No task added.
+            Please add a task.</p>
+           ) : (<>
+           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} />)}
+           </>)}
         </div>
     );
 };
