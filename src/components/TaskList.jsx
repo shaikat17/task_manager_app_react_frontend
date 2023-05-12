@@ -86,19 +86,24 @@ const TaskList = () => {
         getTasks()
     }
 
+    useEffect(() => {
+        const completeTasks = tasks.filter(task => task.completed === true)
+        setCompleteTasks(completeTasks)
+    }, [tasks])
+
 
     return (
         <div>
             <h2>Task Manager</h2>
             <TaskForm name={name} createTask={createTask} handleInputChange={handleInputChange} taskUpdate={taskUpdate} updateTask={updateTask} />
-            <div className="--flex-between --pb">
+            {tasks.length > 0 && <div className="--flex-between --pb">
                 <p>
-                    <b>Total Task:</b> 0
+                    <b>Total Task:</b> {tasks.length}
                 </p>
                 <p>
-                    <b>Completed Task:</b> 0
+                    <b>Completed Task:</b> {completeTasks.length}
                 </p>
-            </div>
+            </div>}
             <hr />
            {!loading && tasks.length === 0 ? (
             <p className="--py">No task added.
