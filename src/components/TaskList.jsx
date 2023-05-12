@@ -15,6 +15,8 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([])
     const [completeTasks, setCompleteTasks] = useState([])
     const [loading, setLoading] = useState(false)
+    const [taskUpdate, setTaskUpdate] = useState(false)
+    const [editId, setEditId] = useState('')
 
     const {name} = formData
 
@@ -45,6 +47,12 @@ const TaskList = () => {
         setTasks(res.data)
     }
 
+    const getSingleTask = async (task) => {
+        setFormData({ name: task.name, completed: false})
+         setEditId(task._id)
+         setTaskUpdate(true)
+    }
+
     useEffect(() => {
         getTasks()
     },[])
@@ -58,10 +66,19 @@ const TaskList = () => {
         }
     }
 
+    const updateTask = async (e) => {
+        e.preventDefault()
+        const res = await axios.put(`http://localhost:3000/api/task/${editId}`, formData)
+        setTaskUpdate(false)
+        if(res.status === 200) toast.success("Task Updated Successfully")
+        setFormData({...formData, name: ""})
+        getTasks()
+    }
+
     return (
         <div>
             <h2>Task Manager</h2>
-            <TaskForm name={name} createTask={createTask} handleInputChange={handleInputChange} />
+            <TaskForm name={name} createTask={createTask} handleInputChange={handleInputChange} taskUpdate={taskUpdate} updateTask={updateTask} />
             <div className="--flex-between --pb">
                 <p>
                     <b>Total Task:</b> 0
@@ -75,7 +92,7 @@ const TaskList = () => {
             <p className="--py">No task added.
             Please add a task.</p>
            ) : (<>
-           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} handleDelete={handleDelete} />)}
+           {tasks.map((task,index) => <Task key={task._id} task={task} index={index} handleDelete={handleDelete} getSingleTask={getSingleTask} />)}
            </>)}
         </div>
     );
